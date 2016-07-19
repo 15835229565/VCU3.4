@@ -1,0 +1,261 @@
+#ifndef    _INCLUDE_H_
+#define   _INCLUDE_H_
+
+/*
+*********************************************************************************************************
+*                                         STANDARD LIBRARIES
+*********************************************************************************************************
+*/
+#pragma MESSAGE DISABLE C1420   //result of function-call is ignored 调用memset\memcpy等函数造成，可忽略
+#pragma MESSAGE DISABLE C2705   //possile loss of data 移位时造成的，可忽略
+#pragma MESSAGE DISABLE C1858   //partial implicit parameter declaration,隐式函数申明，可忽略
+#pragma MESSAGE DISABLE C5900   //result is zero 移位操作引起，可忽略
+
+#define DEBUG_MODE 1                  //1表示调试模式  0表示正常模式
+/***********************VCU软硬件版本*****************************/ 
+#define  HARDWARE_VERSION    0x0300      //高字节表示大版本，低字节表示小版本
+#define  SOFTWARE_VERSION    0x0306      //高字节表示大版本，低字节表示小版本      
+
+#include  <hidef.h>            /* common defines and macros */
+#include  "typedefs.h"
+#include  "derivative.h"      /* derivative-specific definitions */
+#include  <stdio.h>
+#include  <string.h>
+#include  <stdlib.h>
+#include  <math.h>     
+/*
+*********************************************************************************************************
+*                                              APP / BSP
+*********************************************************************************************************
+*/
+#include "init.h"
+#include "gprs.h"
+#include "usart.h"
+#include "gps.h"
+#include "tcpudp.h"
+#include "adc.h"
+#include "timer.h"
+#include "pwm.h"                 
+#include "motor.h"
+#include "io.h"
+#include "can.h"
+#include "flash.h"
+#include "eps.h"
+#include"qibu.h"
+#include"voice.h"
+#include "Ultrasonic.h"
+#include "AT.h"
+#include "security.h"
+#include "Bluetooth.h"
+
+
+
+ //系统工作模式 0:停止运营；1：投币模式（默认）；2：手机模式；3：投币手机混合运营
+/***********************系统运营模式*****************************/  
+#define  STOP_OPERATION                 0x00
+#define  COIN_OPERATION                 0x01
+#define  MOBILE_OPERATION               0x02
+#define  COIN_AND_MOBILE_OPERATION      0x03
+
+/***********************手机操作时车辆返回的操作结果状态**********************************/
+#define  CAR_OP_SUCC                    0x00    //车辆成功
+#define  CAR_ERROR                      0x01    //车辆存在错误码
+#define  USERID_ERROR                   0x02    //车辆用户ID错误
+#define  CARID_ERROR                    0x03    //车辆ID错误
+#define  SPEED_ERROR                    0x04    //车辆车速不为0
+#define  DIPANGLE_ERROR                 0x05    //车辆倾角不在正常范围
+
+/***********************用户权限**********************************/
+#define  MOBILE_TIMEOUT_AUTH            0x01    //用户超时停车权限
+#define  OUT_GPS_FENCE_AUTH             0x02    //用户超出GPS围栏权限
+
+/**************VCU与后台服务器GPRS通信特殊字符********************/
+#define  CMD_START          0xFA          //包头
+#define  CMD_END            0xFB          //包尾
+#define  CMD_ALIAS          0x5C          //转义
+
+/**************VCU接收GPRS/GPS模块命令的三种状态********************/
+#define  WAIT_CMD          0x00           //等待命令
+#define  RECV_CMD          0x01           //接收命令
+#define  PROC_CMD          0x02           //处理命令
+
+/***********************动态可调参数定义***************************/
+#define CarID 25           //车辆编号
+#define Timer0   0xEA4      //电机控制  5ms
+#define Timer6  0x1D4C      //AD采样    10ms
+#define Left 180
+#define Right 370
+#define ELECMAGRELEASE      0x01         //电磁刹车松开
+#define ELECMAGHOLD         0x00         //电磁刹车抱住
+
+#define Metre_Plus 30      // 每米多少脉冲   
+
+
+#define MaxAngle 30                  //车辆倾角范围正负3度
+#define MinAngle -30
+
+#define GPS_TOLERATE_VALUE        80000  //gps围栏的容忍范围
+#define GPS_BUFFER_SIZE 74            //GPS接收buffer
+#define GSM_BUFFER_SIZE 120     //GSM接收buffer
+#define BMS_BUFFER_SIZE 10      //BMS接收buffer
+#define SERVERCMD_BUFFER_SIZE 128//SERVER接收buffer
+#define GPRS_RETRY_TIME       3          //GPRS重试次数
+#define PHONECMD_BUFFER_SIZE  16 //SERVER接收buffer
+/***********************系统状态宏定义***************************/
+#define CarReady              0x00     //待机状态
+#define CarOrder              0x01     //预定状态
+#define CarMaintain           0x02     //维修状态
+#define CoinRenting           0x20     //投币租车状态
+#define MobileRenting         0x21     //手机租车状态
+#define SeverToVCUMisConnect  0x40     //服务器下发丢失连接状态
+
+
+#define MOBILE_TIMEOUT_EXCEPTION         0x0001     //手机用户停车超时
+#define GPRS_DISCONN_EXCEPTION           0x0002     //后台服务器连接断开
+#define LOW_BATTERY_EXCEPTION            0x0004     //电池电量低
+#define OUT_GPS_FENCE_EXCEPTION          0x0008     //超出GPS栅栏
+#define HIGH_TEMPATURE_EXCEPTION         0x0010     //电池温度过高
+#define HIGH_COLLISION_EXCEPTION         0x0020     //异常碰撞
+
+/***********************AD采样端口定义***************************/
+#define ACCEL_PEDAL_CH        0x00        //加速踏板
+#define CORNER_SENSOR1_CH     0x01        //转角传感器一
+#define CORNER_SENSOR2_CH     0x02        //转角传感器二
+#define DIP_Z_AXIS_CH         0x03        //倾角Z轴
+#define BATTERY_VOLT_CH       0x04        //电池电压
+#define DIP_Y_AXIS_CH         0x05        //倾角Y轴
+#define DIP_X_AXIS_CH         0x06        //倾角X轴
+#define BATTERY_CURR_CH       0x09        //电池电流
+#define BATTERY_TEMP_CH       0x0A        //电池温度
+/***********************MCU工作模式***************************/
+#define NORMAL_MODE           0x00        //正常模式
+#define TEST_MODE             0x01        //测试模式
+#define CONFIG_MODE           0x02        //配置模式
+
+/***********************下线检测测试标志位*********************/
+#define BLUETOOTH_TEST_FLAG   63          //57位以前为管脚占用
+#define GPRS_TEST_FLAG        62
+#define GPS_TEST_FLAG         61
+#define DIPANGLE_TEST_FLAG    60
+#define BATTERY_CAL_FLAG      59
+#define BATTERY_BASE_FLAG     58
+
+#define MCU_REF_VOLT_FLAG     25
+#define MCU_REF_GND_FLAG      24
+#define VOICE_OUTPUT2_FLAG    23
+#define VOICE_OUTPUT1_FLAG    22
+/***********************全局变量定义***************************/
+
+extern uint16 MatrixAD[11];
+extern uint16  tempiPEDAL;
+
+extern uint16 y_tempangle; 
+extern uint16 CurrentElectricity;           //锂电池当前电量
+extern uint32 available_time;               //投入硬币可供行驶的总时间（分钟）
+extern uint32 available_metre;              //投入硬币可供行驶的总距离（米）
+
+extern uint8 Collision_flag;
+/**********************定时器中断相关变量*************************/
+
+
+extern uint8 freq_500ms;
+extern uint8 freq_1s;
+
+extern uint8 freq_5s;
+extern uint8 freq_15s;
+extern uint8 freq_60s;
+extern uint8 rent_freq_flag;
+extern uint8 standby_freq_flag;
+
+extern uint8  phoneVerifFlag;
+extern uint8 wuren_flag;
+extern uint8  drive_direction ;
+extern uint16 Timer0Counter ;
+
+
+extern uint16 Motorstep_per_sec;
+extern uint16 Motorstep_per_sec_count ;
+
+extern uint8 time_count_PID;
+extern uint8 time_count;
+extern uint16 last_plus_count;
+
+extern uint16 gGPRSConnectTimer;
+extern uint16 gGprsInitialTimer;
+extern uint16 gGPSLocationTimer;
+
+extern uint8  coin_plus_trig;
+/*******************************电机参数输出定义*********************************/
+
+extern uint16 Period;
+extern uint16 Duty;
+extern uint8 start_flag;              //启东时，踏板踩到底标志
+
+/*******************************车身状态相关参数定义*********************************/
+struct DEVICESTATE
+{
+    uint8 Headlamp:1;
+    uint8 Leftlamp:1;
+    uint8 Rightlamp:1;
+    uint8 Nightlamp:1;
+    uint8 Horn:1;
+    uint8 Wiper:1;
+    uint8 SlotmachineState:1;
+    uint8 ReverseRelayState:1;
+};
+union  devicestate
+{
+    struct DEVICESTATE state;
+    uint8 data;
+};
+
+struct Angle
+{
+    uint8 angle_flag;
+    uint32 angle_xout_Standard;
+};
+extern union  devicestate device,deviceswitch;
+extern uint8 ReverselampStatus;
+extern uint8 BrakeRelayStatus;
+extern uint8 ReserveRelayStatus;
+
+extern uint8 GPSSwitchflag;
+extern uint8 ReverselampSwitchflag;
+extern uint8 ReserveRelaySwitchflag;
+
+/****************GPRS/GPS相关参数定义***********************/
+extern uint8 GPRS_init_flag;
+extern uint8 GPS_init_flag;                                          //GPRS模块上电标志
+extern uint8 GSM_MSG_Buf[GSM_BUFFER_SIZE];       //接收到的GSM消息
+extern uint16 Receive_i;                                    //接收字符buffer
+extern uint8 GSM_Receive_Buf[BMS_BUFFER_SIZE];   //接收字符buffer_GSM
+extern uint16 GSM_buffer_p;
+
+extern uint8 ServerCommand_flag;
+extern uint8 ServerCommand[SERVERCMD_BUFFER_SIZE];
+extern uint8 GPS_message_flag;
+
+extern uint8 GPS_BUFFER[GPS_BUFFER_SIZE];
+extern uint8 GPSRecvIndex;
+extern uint8 usart0word;
+
+extern uint8 PhoneCommand_flag;
+extern uint8 PhoneCommand[PHONECMD_BUFFER_SIZE];
+
+/****************无人驾驶相关参数定义***********************/
+extern uint8 drive_mode;
+extern uint8 canflag;
+extern uint8 drive_direction;
+extern uint8 destspeed;
+extern uint8 currentspeed;
+extern uint8 turndirection;
+extern uint8 currentdirection;
+extern uint16 destangle;
+extern uint16 currentangle;
+
+extern uint8 time_count_PID;
+
+#endif
+
+
+

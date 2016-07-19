@@ -1,0 +1,9 @@
+---- LeftlampSwitch Matches (8 in 3 files) ----
+All.h (d:\cherry\无人驾驶相关\1.3.10 - 无人驾驶\sources):#define LeftlampSwitch            PTP_PTP1  	//右转灯开关
+Init.c (d:\cherry\无人驾驶相关\1.3.10 - 无人驾驶\sources):      LeftlampSwitch = 0;
+Io.c (d:\cherry\无人驾驶相关\1.3.10 - 无人驾驶\sources):	    LeftlampSwitch = 0;        
+Io.c (d:\cherry\无人驾驶相关\1.3.10 - 无人驾驶\sources):           LeftlampSwitch = 1;          
+Io.c (d:\cherry\无人驾驶相关\1.3.10 - 无人驾驶\sources):       LeftlampSwitch = 0;
+Io.c (d:\cherry\无人驾驶相关\1.3.10 - 无人驾驶\sources):	    LeftlampSwitch = 0;        
+Io.c (d:\cherry\无人驾驶相关\1.3.10 - 无人驾驶\sources):           LeftlampSwitch = 1;          
+Io.c (d:\cherry\无人驾驶相关\1.3.10 - 无人驾驶\sources):       LeftlampSwitch = 0;
